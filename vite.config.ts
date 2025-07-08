@@ -12,3 +12,7 @@ export default defineConfig({
           if (id.includes("recharts") || id.includes("d3-") || id.includes("victory-vendor")) {
             return "charts";
           }
+          if (id.includes("react")) return "react-vendor";
+          return undefined;
+        },
+      },
