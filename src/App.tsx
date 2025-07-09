@@ -52,3 +52,56 @@ export default function App() {
   const pushAlert = (a: Alert) => setAlerts((prev) => [a, ...prev].slice(0, 200));
 
   useEffect(() => {
+    if (paused) return;
+    const handle = (e: SensorEvent) => {
+      switch (e.type) {
+        case "reading": {
+          const r = e.reading;
+          log.current.push(r);
+          if (log.current.length > MAX_LOG) log.current.shift();
+          setLastSeen((p) => ({ ...p, [r.deviceId]: r.timestamp }));
+          setHistory((p) => ({ ...p, [r.deviceId]: [...(p[r.deviceId] ?? []), r].slice(-HISTORY) }));
+
+          const checks = evaluate(r, thresholdsRef.current);
+          const firing = new Set<AlertKind>();
+          for (const c of checks) {
+            firing.add(c.kind);
+            const key = `${r.deviceId}:${c.kind}`;
+            const prev = active.current.get(key);
+            if (!prev || rank[c.severity] > rank[prev]) {
+              active.current.set(key, c.severity);
+              pushAlert(makeAlert(r.deviceId, c, r.timestamp));
+            }
+          }
+          for (const k of ["temperature", "smoke", "humidity"] as const) {
+            if (!firing.has(k)) active.current.delete(`${r.deviceId}:${k}`);
+          }
+          active.current.delete(`${r.deviceId}:offline`);
+          break;
+        }
+        case "fire-start":
+        case "fire-end":
+          // ground truth from the simulator; shown in the console for debugging only
+          console.debug(`[sim] ${e.type} @ ${e.deviceId}`);
+          break;
+        case "disconnect":
+        case "reconnect":
+          console.debug(`[sim] ${e.type} @ ${e.deviceId}`);
+          break;
+      }
+    };
+    sim.current = startSimulator(handle);
+    return () => sim.current?.stop();
+  }, [paused]);
+
+  // clock for offline detection
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const isOffline = (id: DeviceId) =>
+    !paused && (lastSeen[id] === undefined || now - lastSeen[id] > thresholds.offlineAfterSec * 1000);
+
+  useEffect(() => {
+    if (paused) return;
