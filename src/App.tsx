@@ -105,3 +105,56 @@ export default function App() {
 
   useEffect(() => {
     if (paused) return;
+    for (const d of DEVICES) {
+      const key = `${d.id}:offline`;
+      if (lastSeen[d.id] !== undefined && isOffline(d.id) && !active.current.has(key)) {
+        active.current.set(key, "warning");
+        pushAlert(
+          makeAlert(d.id, { kind: "offline", severity: "warning", message: `${d.room} node stopped reporting` }, now)
+        );
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [now]);
+
+  const chartData = useMemo(() => {
+    const rows = new Map<number, Record<string, number>>();
+    for (const d of DEVICES) {
+      for (const r of history[d.id] ?? []) {
+        const sec = Math.floor(r.timestamp / 1000) * 1000;
+        const row = rows.get(sec) ?? { t: sec };
+        row[d.id] = r[metric];
+        rows.set(sec, row);
+      }
+    }
+    return [...rows.values()].sort((a, b) => a.t - b.t);
+  }, [history, metric]);
+
+  const unacked = alerts.filter((a) => !a.acknowledged).length;
+  const visibleAlerts = showAcked ? alerts : alerts.filter((a) => !a.acknowledged);
+  const ack = (id: string) => setAlerts((p) => p.map((a) => (a.id === id ? { ...a, acknowledged: true } : a)));
+  const ackAll = () => setAlerts((p) => p.map((a) => ({ ...a, acknowledged: true })));
+
+  const setT = (key: keyof Thresholds, value: number) => setThresholds({ ...thresholds, [key]: value });
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-slate-100">
+      <header className="border-b border-slate-800 px-6 py-4 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-xl font-bold tracking-tight">
+            <span className="text-orange-400">ALERT</span>ECH · Firestation Dashboard
+          </h1>
+          <p className="text-xs text-slate-400">Simulated IoT nodes · temperature, humidity, smoke · 1 reading/sec</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className={`rounded-full px-3 py-1 text-xs font-semibold ${unacked ? "bg-fire text-white" : "bg-slate-800"}`}>
+            {unacked} unacknowledged
+          </span>
+          <button className="btn bg-slate-800 hover:bg-slate-700" onClick={() => setPaused((p) => !p)}>
+            {paused ? "Resume" : "Pause"} feed
+          </button>
+          <button
+            className="btn bg-orange-500 text-slate-950 hover:bg-orange-400"
+            onClick={() => downloadText(`alertech-readings-${Date.now()}.csv`, readingsToCsv(log.current))}
+          >
+            Export CSV
