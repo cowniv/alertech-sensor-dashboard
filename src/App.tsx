@@ -158,3 +158,56 @@ export default function App() {
             onClick={() => downloadText(`alertech-readings-${Date.now()}.csv`, readingsToCsv(log.current))}
           >
             Export CSV
+          </button>
+        </div>
+      </header>
+
+      <main className="grid gap-4 p-6 lg:grid-cols-[1fr_340px]">
+        <div className="space-y-4">
+          <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label="Devices">
+            {DEVICES.map((d, i) => {
+              const latest = history[d.id]?.slice(-1)[0];
+              const offline = isOffline(d.id);
+              const status = statusFor(latest, thresholds, offline);
+              return (
+                <article key={d.id} className={`panel border-2 ${STATUS_STYLE[status]}`}>
+                  <div className="flex items-center justify-between">
+                    <h2 className="font-semibold text-slate-100">
+                      <span className="mr-2 inline-block h-2.5 w-2.5 rounded-full" style={{ background: COLORS[i] }} />
+                      {d.room}
+                    </h2>
+                    <span className="text-xs font-bold uppercase">{status}</span>
+                  </div>
+                  <p className="text-xs text-slate-500">
+                    {d.id} · last seen {lastSeen[d.id] ? time(lastSeen[d.id]) : "never"}
+                  </p>
+                  <dl className="mt-3 grid grid-cols-3 gap-2 text-center text-slate-200">
+                    {(Object.keys(METRICS) as Metric[]).map((m) => (
+                      <div key={m} className="rounded-lg bg-slate-950 py-2">
+                        <dt className="text-[10px] uppercase text-slate-500">{METRICS[m].label}</dt>
+                        <dd className="font-mono text-sm">
+                          {latest && !offline ? `${latest[m]}${METRICS[m].unit}` : "—"}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                  <button
+                    className="mt-3 text-xs text-slate-500 underline hover:text-orange-400"
+                    onClick={() => sim.current?.triggerFire(d.id)}
+                  >
+                    Simulate fire here
+                  </button>
+                </article>
+              );
+            })}
+          </section>
+
+          <section className="panel">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+              <h2 className="font-semibold">Live readings (last {HISTORY}s)</h2>
+              <div role="tablist" className="flex gap-1">
+                {(Object.keys(METRICS) as Metric[]).map((m) => (
+                  <button
+                    key={m}
+                    role="tab"
+                    aria-selected={metric === m}
