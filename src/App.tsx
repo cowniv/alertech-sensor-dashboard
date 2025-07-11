@@ -211,3 +211,56 @@ export default function App() {
                     key={m}
                     role="tab"
                     aria-selected={metric === m}
+                    onClick={() => setMetric(m)}
+                    className={`btn ${metric === m ? "bg-orange-500 text-slate-950" : "bg-slate-800 hover:bg-slate-700"}`}
+                  >
+                    {METRICS[m].label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={chartData}>
+                  <CartesianGrid stroke="#1e293b" />
+                  <XAxis dataKey="t" tickFormatter={time} stroke="#64748b" fontSize={11} minTickGap={40} />
+                  <YAxis stroke="#64748b" fontSize={11} unit={METRICS[metric].unit} width={60} />
+                  <Tooltip
+                    labelFormatter={(v) => time(Number(v))}
+                    contentStyle={{ background: "#0f172a", border: "1px solid #334155" }}
+                  />
+                  <Legend />
+                  {DEVICES.map((d, i) => (
+                    <Line
+                      key={d.id}
+                      dataKey={d.id}
+                      name={d.room}
+                      stroke={COLORS[i]}
+                      dot={false}
+                      isAnimationActive={false}
+                      connectNulls={false}
+                    />
+                  ))}
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </section>
+
+          <section className="panel">
+            <h2 className="mb-3 font-semibold">Thresholds</h2>
+            <form className="grid gap-3 sm:grid-cols-3" onSubmit={(e) => e.preventDefault()}>
+              {(
+                [
+                  ["temperatureWarn", "Temp warning (°C)"],
+                  ["temperatureCritical", "Temp critical (°C)"],
+                  ["smokeWarn", "Smoke warning (ppm)"],
+                  ["smokeCritical", "Smoke critical (ppm)"],
+                  ["humidityLow", "Low humidity (%)"],
+                  ["offlineAfterSec", "Offline after (s)"],
+                ] as [keyof Thresholds, string][]
+              ).map(([key, label]) => (
+                <label key={key} className="text-xs text-slate-400">
+                  {label}
+                  <input
+                    type="number"
+                    className="input mt-1"
