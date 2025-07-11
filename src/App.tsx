@@ -264,3 +264,56 @@ export default function App() {
                   <input
                     type="number"
                     className="input mt-1"
+                    value={thresholds[key]}
+                    min={0}
+                    onChange={(e) => setT(key, Number(e.target.value))}
+                  />
+                </label>
+              ))}
+            </form>
+            <button className="mt-3 text-xs text-slate-400 underline" onClick={() => setThresholds(DEFAULT_THRESHOLDS)}>
+              Reset to defaults
+            </button>
+          </section>
+        </div>
+
+        <aside className="panel flex max-h-[calc(100vh-7rem)] flex-col lg:sticky lg:top-4">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="font-semibold">Alert log</h2>
+            <div className="flex items-center gap-2 text-xs">
+              <label className="flex items-center gap-1 text-slate-400">
+                <input type="checkbox" checked={showAcked} onChange={(e) => setShowAcked(e.target.checked)} />
+                show acked
+              </label>
+              <button className="btn bg-slate-800 hover:bg-slate-700" onClick={ackAll} disabled={!unacked}>
+                Ack all
+              </button>
+            </div>
+          </div>
+          <ul className="flex-1 space-y-2 overflow-y-auto" aria-live="polite">
+            {visibleAlerts.length === 0 && <li className="text-sm text-slate-500">All clear.</li>}
+            {visibleAlerts.map((a) => {
+              const device = DEVICES.find((d) => d.id === a.deviceId);
+              return (
+                <li key={a.id} className={`rounded-lg p-3 text-sm ${SEVERITY_STYLE[a.severity]} ${a.acknowledged ? "opacity-50" : ""}`}>
+                  <div className="flex items-center justify-between">
+                    <strong className="uppercase text-xs">{a.severity}</strong>
+                    <span className="text-xs opacity-70">{time(a.timestamp)}</span>
+                  </div>
+                  <p className="text-slate-100">
+                    {device?.room}: {a.message}
+                  </p>
+                  {!a.acknowledged && (
+                    <button className="mt-1 text-xs underline" onClick={() => ack(a.id)}>
+                      Acknowledge
+                    </button>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </aside>
+      </main>
+    </div>
+  );
+}
