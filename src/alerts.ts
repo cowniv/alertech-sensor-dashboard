@@ -20,3 +20,13 @@ export function evaluate(r: Reading, t: Thresholds): Check[] {
   const out: Check[] = [];
   if (r.temperature >= t.temperatureCritical)
     out.push({ kind: "temperature", severity: "critical", message: `Temperature at ${r.temperature}°C` });
+  else if (r.temperature >= t.temperatureWarn)
+    out.push({ kind: "temperature", severity: "warning", message: `Temperature at ${r.temperature}°C` });
+
+  if (r.smoke >= t.smokeCritical)
+    out.push({ kind: "smoke", severity: "critical", message: `Smoke at ${r.smoke} ppm` });
+  else if (r.smoke >= t.smokeWarn)
+    out.push({ kind: "smoke", severity: "warning", message: `Smoke at ${r.smoke} ppm` });
+
+  if (r.humidity <= t.humidityLow)
+    out.push({ kind: "humidity", severity: "info", message: `Low humidity (${r.humidity}%)` });
