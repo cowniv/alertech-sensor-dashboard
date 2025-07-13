@@ -9,3 +9,14 @@ export const DEFAULT_THRESHOLDS: Thresholds = {
   offlineAfterSec: 5,
 };
 
+export interface Check {
+  kind: AlertKind;
+  severity: Severity;
+  message: string;
+}
+
+/** Pure function: which thresholds does this reading break? */
+export function evaluate(r: Reading, t: Thresholds): Check[] {
+  const out: Check[] = [];
+  if (r.temperature >= t.temperatureCritical)
+    out.push({ kind: "temperature", severity: "critical", message: `Temperature at ${r.temperature}°C` });
