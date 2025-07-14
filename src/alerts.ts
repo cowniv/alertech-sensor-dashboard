@@ -52,3 +52,13 @@ export function readingsToCsv(readings: Reading[]): string {
     (r) => `${new Date(r.timestamp).toISOString()},${r.deviceId},${r.temperature},${r.humidity},${r.smoke}`
   );
   return [header, ...rows].join("\n");
+}
+
+export function downloadText(filename: string, text: string, mime = "text/csv") {
+  const url = URL.createObjectURL(new Blob([text], { type: mime }));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
