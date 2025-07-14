@@ -30,3 +30,14 @@ export function evaluate(r: Reading, t: Thresholds): Check[] {
 
   if (r.humidity <= t.humidityLow)
     out.push({ kind: "humidity", severity: "info", message: `Low humidity (${r.humidity}%)` });
+  return out;
+}
+
+export function statusFor(r: Reading | undefined, t: Thresholds, offline: boolean): DeviceStatus {
+  if (offline || !r) return "offline";
+  const checks = evaluate(r, t);
+  if (checks.some((c) => c.severity === "critical")) return "critical";
+  if (checks.some((c) => c.severity === "warning")) return "warning";
+  return "normal";
+}
+
