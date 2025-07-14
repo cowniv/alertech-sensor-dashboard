@@ -41,3 +41,14 @@ export function statusFor(r: Reading | undefined, t: Thresholds, offline: boolea
   return "normal";
 }
 
+let counter = 0;
+export function makeAlert(deviceId: string, c: Check, timestamp: number): Alert {
+  return { id: `${timestamp}-${counter++}`, deviceId, ...c, timestamp, acknowledged: false };
+}
+
+export function readingsToCsv(readings: Reading[]): string {
+  const header = "timestamp,device_id,temperature_c,humidity_pct,smoke_ppm";
+  const rows = readings.map(
+    (r) => `${new Date(r.timestamp).toISOString()},${r.deviceId},${r.temperature},${r.humidity},${r.smoke}`
+  );
+  return [header, ...rows].join("\n");
