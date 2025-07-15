@@ -52,3 +52,21 @@ export function startSimulator(
     s.fireTicks = Math.round(rand(20, 40));
     onEvent({ type: "fire-start", deviceId: id, timestamp: now });
   };
+
+  const tick = () => {
+    const now = Date.now();
+    for (const d of DEVICES) {
+      const s = state.get(d.id)!;
+
+      if (s.offlineTicks > 0) {
+        s.offlineTicks--;
+        if (s.offlineTicks === 0) onEvent({ type: "reconnect", deviceId: d.id, timestamp: now });
+        continue;
+      }
+      if (s.fireTicks === 0 && Math.random() < dropChance) {
+        s.offlineTicks = Math.round(rand(12, 25));
+        onEvent({ type: "disconnect", deviceId: d.id, timestamp: now });
+        continue;
+      }
+
+      if (Math.random() < fireChance) ignite(d.id, now);
