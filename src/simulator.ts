@@ -70,3 +70,21 @@ export function startSimulator(
       }
 
       if (Math.random() < fireChance) ignite(d.id, now);
+
+      if (s.fireTicks > 0) {
+        s.temperature += rand(1.2, 3.5);
+        s.smoke += rand(40, 120);
+        s.humidity -= rand(0.5, 1.5);
+        s.fireTicks--;
+        if (s.fireTicks === 0) onEvent({ type: "fire-end", deviceId: d.id, timestamp: now });
+      } else {
+        // relax back toward the baseline
+        s.temperature += (28 - s.temperature) * 0.15 + rand(-0.3, 0.3);
+        s.smoke += (40 - s.smoke) * 0.2 + rand(-5, 5);
+        s.humidity += (62 - s.humidity) * 0.1 + rand(-0.5, 0.5);
+      }
+
+      s.temperature = clamp(s.temperature, 15, 120);
+      s.humidity = clamp(s.humidity, 10, 95);
+      s.smoke = clamp(s.smoke, 0, 2000);
+
