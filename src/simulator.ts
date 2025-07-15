@@ -34,3 +34,21 @@ export interface Simulator {
  * Stands in for the Arduino nodes. Each tick every device drifts around a
  * baseline. Sometimes a fire scenario ramps temperature and smoke up, and
  * sometimes a device stops reporting so offline detection has work to do.
+ */
+export function startSimulator(
+  onEvent: (e: SensorEvent) => void,
+  { intervalMs = 1000, fireChance = 0.004, dropChance = 0.002 }: SimulatorOptions = {}
+): Simulator {
+  const state = new Map<DeviceId, DeviceState>(
+    DEVICES.map((d) => [
+      d.id,
+      { temperature: rand(26, 30), humidity: rand(55, 70), smoke: rand(20, 60), fireTicks: 0, offlineTicks: 0 },
+    ])
+  );
+
+  const ignite = (id: DeviceId, now: number) => {
+    const s = state.get(id);
+    if (!s || s.fireTicks > 0 || s.offlineTicks > 0) return;
+    s.fireTicks = Math.round(rand(20, 40));
+    onEvent({ type: "fire-start", deviceId: id, timestamp: now });
+  };
