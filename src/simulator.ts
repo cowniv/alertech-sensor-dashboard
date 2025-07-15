@@ -16,3 +16,21 @@ interface DeviceState {
 }
 
 const rand = (min: number, max: number) => min + Math.random() * (max - min);
+const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
+const round1 = (v: number) => Math.round(v * 10) / 10;
+
+export interface SimulatorOptions {
+  intervalMs?: number;
+  fireChance?: number; // chance per device per tick
+  dropChance?: number;
+}
+
+export interface Simulator {
+  stop: () => void;
+  triggerFire: (id: DeviceId) => void;
+}
+
+/**
+ * Stands in for the Arduino nodes. Each tick every device drifts around a
+ * baseline. Sometimes a fire scenario ramps temperature and smoke up, and
+ * sometimes a device stops reporting so offline detection has work to do.
