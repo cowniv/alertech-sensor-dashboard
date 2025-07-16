@@ -88,3 +88,20 @@ export function startSimulator(
       s.humidity = clamp(s.humidity, 10, 95);
       s.smoke = clamp(s.smoke, 0, 2000);
 
+      const reading: Reading = {
+        deviceId: d.id,
+        timestamp: now,
+        temperature: round1(s.temperature),
+        humidity: round1(s.humidity),
+        smoke: Math.round(s.smoke),
+      };
+      onEvent({ type: "reading", reading });
+    }
+  };
+
+  const handle = setInterval(tick, intervalMs);
+  return {
+    stop: () => clearInterval(handle),
+    triggerFire: (id) => ignite(id, Date.now()),
+  };
+}
