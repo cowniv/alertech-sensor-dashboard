@@ -6,3 +6,11 @@ export interface Device {
   room: string;
 }
 
+export interface Reading {
+  deviceId: DeviceId;
+  timestamp: number; // ms since epoch
+  temperature: number; // °C
+  humidity: number; // %RH
+  smoke: number; // ppm (MQ-2 style estimate)
+}
+
