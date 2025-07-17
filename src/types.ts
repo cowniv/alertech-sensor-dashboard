@@ -38,3 +38,11 @@ export type AlertKind = "temperature" | "smoke" | "humidity" | "offline";
 export interface Alert {
   id: string;
   deviceId: DeviceId;
+  kind: AlertKind;
+  severity: Severity;
+  message: string;
+  timestamp: number;
+  acknowledged: boolean;
+}
+
+export type DeviceStatus = "normal" | "warning" | "critical" | "offline";
