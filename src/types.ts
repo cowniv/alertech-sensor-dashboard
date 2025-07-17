@@ -30,3 +30,11 @@ export type SensorEvent =
   | { type: "reading"; reading: Reading }
   | { type: "fire-start"; deviceId: DeviceId; timestamp: number }
   | { type: "fire-end"; deviceId: DeviceId; timestamp: number }
+  | { type: "disconnect"; deviceId: DeviceId; timestamp: number }
+  | { type: "reconnect"; deviceId: DeviceId; timestamp: number };
+
+export type AlertKind = "temperature" | "smoke" | "humidity" | "offline";
+
+export interface Alert {
+  id: string;
+  deviceId: DeviceId;
