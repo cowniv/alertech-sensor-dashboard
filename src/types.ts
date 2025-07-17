@@ -22,3 +22,11 @@ export interface Thresholds {
   humidityLow: number; // dry air helps fires spread
   offlineAfterSec: number;
 }
+
+export type Severity = "info" | "warning" | "critical";
+
+/** Everything the simulator can emit, as a discriminated union on `type`. */
+export type SensorEvent =
+  | { type: "reading"; reading: Reading }
+  | { type: "fire-start"; deviceId: DeviceId; timestamp: number }
+  | { type: "fire-end"; deviceId: DeviceId; timestamp: number }
