@@ -14,3 +14,11 @@ export interface Reading {
   smoke: number; // ppm (MQ-2 style estimate)
 }
 
+export interface Thresholds {
+  temperatureWarn: number;
+  temperatureCritical: number;
+  smokeWarn: number;
+  smokeCritical: number;
+  humidityLow: number; // dry air helps fires spread
+  offlineAfterSec: number;
+}
