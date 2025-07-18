@@ -6,3 +6,6 @@ export function useLocalStorage<T>(key: string, initial: T) {
       const raw = localStorage.getItem(key);
       return raw ? (JSON.parse(raw) as T) : initial;
     } catch {
+      return initial;
+    }
+  });
