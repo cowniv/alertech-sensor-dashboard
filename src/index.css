@@ -5,3 +5,6 @@
   --color-warn: #f59e0b;
   --color-ok: #22c55e;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer components {
