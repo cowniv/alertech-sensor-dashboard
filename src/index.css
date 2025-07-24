@@ -15,3 +15,6 @@
     @apply w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-sm text-slate-100 outline-none focus:border-orange-400;
   }
   .btn {
+    @apply rounded-lg px-3 py-1.5 text-sm font-medium transition-colors disabled:opacity-40;
+  }
+}
