@@ -9,3 +9,8 @@ During the hackathon our dashboard was a quick page that just printed numbers. I
 ### Features
 - Simulator emits a discriminated union of events (`reading`, `fire-start`, `fire-end`, `disconnect`, `reconnect`)
 - Live Recharts line chart per metric (temperature / smoke / humidity) for the last 60 seconds
+- Per-device status cards: normal, warning, critical or offline
+- Offline detection when a node hasn't reported for N seconds
+- Threshold settings saved to localStorage
+- Alert log with severity levels. A new alert is only raised when a condition escalates, so the log doesn't fill up with repeats every second
+- Acknowledge one alert or all of them
