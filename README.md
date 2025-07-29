@@ -14,3 +14,8 @@ During the hackathon our dashboard was a quick page that just printed numbers. I
 - Threshold settings saved to localStorage
 - Alert log with severity levels. A new alert is only raised when a condition escalates, so the log doesn't fill up with repeats every second
 - Acknowledge one alert or all of them
+- "Simulate fire here" button for demos
+- Export every reading so far to CSV
+
+### Run
+```bash
