@@ -19,3 +19,8 @@ During the hackathon our dashboard was a quick page that just printed numbers. I
 
 ### Run
 ```bash
+npm install
+npm run dev
+```
+
+### What I practiced
