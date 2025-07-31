@@ -24,3 +24,8 @@ npm run dev
 ```
 
 ### What I practiced
+- Discriminated unions and exhaustive `switch` on event types
+- `Record<K, V>` lookup tables for styles and labels
+- Keeping fast-changing data in `useRef` vs. state that should re-render
+- Recharts with live data
+- Writing pure functions (`evaluate`, `statusFor`) so the alert rules stay separate from the UI
